@@ -2,6 +2,12 @@
 include_once __DIR__ . '/../php/constants.php';
 session_start();
 
+if (isset($_GET['redirect'])) {
+	$redirect_value_attr = 'value="' . $_GET['redirect'] . '"';
+}
+else { 
+	$redirect_value_attr = '';
+}
 ?>
 <!DOCTYPE html>
 <html>
@@ -19,7 +25,7 @@ session_start();
 		    </div>
 		    <?php $_SESSION[SESSION_ERROR] = null; } ?>
 			<form action="auth.php" method="POST">
-				<input type="text" name="redirect" class="hidden">
+				<input type="text" name="redirect" class="hidden" <?= $redirect_value_attr ?>>
 				<div class="form-group">
 					<label for="user_input">Username</label>
 					<input id="user_input" name="username" type="text" class="form-control">
