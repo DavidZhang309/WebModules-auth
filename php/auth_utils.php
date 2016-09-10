@@ -9,7 +9,7 @@ function get_user_id($redirect = false)
 	}
 	else if ($redirect)
 	{
-		header($redirect);
+		header("location: " . $redirect);
 		exit();
 	}
 	else
