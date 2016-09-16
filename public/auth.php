@@ -31,21 +31,22 @@ if (isset($_POST['redirect'])) {
 
 $db_connection = new AuthDB();
 $statement = $db_connection->prepare('
-	SELECT UserID, GroupID, Password, Salt
+	SELECT UserID, 
+		Password, 
+		Salt
 	FROM tbl_users
 	WHERE Username=?
 ');
 
 $statement->bind_param('s', $user);
 $statement->execute();
-$statement->bind_result($query_id, $query_group, $query_password, $query_salt);
+$statement->bind_result($query_id, $query_password, $query_salt);
 
 if (!$statement->fetch()) { //user does not exist
 	login_failed('Account does not exist.');
 }
 if (hash('sha256', $query_salt . $pass) === $query_password) {
 	$_SESSION[SESSION_ID] = $query_id;
-	$_SESSION[SESSION_GROUP] = $query_group;
 	if ($redirect !== false) {
 		header("location: $redirect");
 	}

@@ -31,20 +31,19 @@ if (isset($_POST['password'])) {
 
 $db_connection = new AuthDB();
 $statement = $db_connection->prepare('
-	SELECT UserID, GroupID, Password, Salt
+	SELECT UserID, Password, Salt
 	FROM tbl_users
 	WHERE Username=?
 ');
 $statement->bind_param('s', $username);
 $statement->execute();
-$statement->bind_result($query_id, $query_group, $query_password, $query_salt);
+$statement->bind_result($query_id, $query_password, $query_salt);
 if (!$statement->fetch()) { //user does not exist
 	abort_response('invalid_username', 'User does not exist');
 }
 
 if (hash('sha256', $query_salt . $password) === $query_password) {
 	$_SESSION[SESSION_ID] = $query_id;
-	$_SESSION[SESSION_GROUP] = $query_group;
 	echo json_encode(array());
 } else {
 	abort_response('invalid_password', 'Password is incorrect');
