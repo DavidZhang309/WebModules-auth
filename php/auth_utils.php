@@ -1,4 +1,5 @@
 <?php
+include_once "AuthDB.php";
 include_once "constants.php";
 
 function get_user_id($redirect = false)
@@ -17,15 +18,40 @@ function get_user_id($redirect = false)
 		return -1;
 	}
 }
-function get_group_id()
-{
-	if (isset($_SESSION[SESSION_GROUP]))
-	{
-		return $_SESSION[SESSION_GROUP];
+
+function get_permissions($project_id) {
+	$user = get_user_id();
+	if (!isset($_SESSION[SESSION_PERMISSION][$project_id])) {
+		$db_connection = new AuthDB();
+		$statement = $db_connection->prepare("
+			SELECT 
+				PermissionCode
+			FROM v_permissions
+			WHERE UserID=? AND ProjectID=?
+		");
+		$statement->bind_param('ii', $user, $project_id);
+		$statement->execute();
+		$statement->bind_result($query_permission);
+
+		$permissions = array();
+		while ($statement->fetch()) {
+			$permissions[] = $query_permission;
+		}
+
+		$_SESSION[SESSION_PERMISSION][$project_id] = $permissions;
 	}
-	else
-	{
-		return GROUP_PUBLIC;
+	return $_SESSION[SESSION_PERMISSION][$project_id];
+}
+
+function get_redirect() {
+	if (isset($_GET["redirect"])) {
+		return $_GET["redirect"];
+	}
+	else if (isset($_POST["redirect"])) {
+		return $_POST["redirect"];
+	}
+	else {
+		return false;
 	}
 }
 ?>
