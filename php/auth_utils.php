@@ -43,6 +43,11 @@ function get_permissions($project_id) {
 	return $_SESSION[SESSION_PERMISSION][$project_id];
 }
 
+function has_permissions($project_id, $permission_code) {
+	$permissions = get_permissions($project_id);
+	return array_search($permission_code, $permissions) !== false;
+}
+
 function get_redirect() {
 	if (isset($_GET["redirect"])) {
 		return $_GET["redirect"];
