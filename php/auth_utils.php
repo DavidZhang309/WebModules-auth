@@ -40,6 +40,10 @@ function update_permissions($project_id) {
 }
 
 function get_permissions($project_id) {
+	if (!isset($_SESSION[SESSION_PERMISSION])) {
+		$_SESSION[SESSION_PERMISSION] = array();
+	}
+
 	$user = get_user_id();
 	if (!isset($_SESSION[SESSION_PERMISSION][$project_id])) {
 		update_permissions($project_id);
