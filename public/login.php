@@ -1,12 +1,18 @@
 <?php 
+include_once __DIR__ . '/../php/auth_utils.php';
 include_once __DIR__ . '/../php/constants.php';
 session_start();
 
-if (isset($_GET['redirect'])) {
-	$redirect_value_attr = 'value="' . $_GET['redirect'] . '"';
+$redirect = get_redirect();
+
+$redirect_value_attr = '';
+if ($redirect) {
+	$redirect_value_attr = 'value="' . $redirect . '"';
 }
-else { 
-	$redirect_value_attr = '';
+
+$project_id_attr = '';
+if (isset($_GET['p_id'])) {
+	$project_id_attr = 'value="' . $_GET['p_id'] . '"';
 }
 ?>
 <!DOCTYPE html>
@@ -25,6 +31,7 @@ else {
 		    </div>
 		    <?php $_SESSION[SESSION_ERROR] = null; } ?>
 			<form action="auth.php" method="POST">
+				<input type="text" name="p_id" class="hidden" <?= $project_id_attr ?>>
 				<input type="text" name="redirect" class="hidden" <?= $redirect_value_attr ?>>
 				<div class="form-group">
 					<label for="user_input">Username</label>
