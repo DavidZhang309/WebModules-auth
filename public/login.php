@@ -1,6 +1,7 @@
 <?php 
 include_once __DIR__ . '/../php/auth_utils.php';
 include_once __DIR__ . '/../php/constants.php';
+include_once __DIR__ . '/../php/template.php';
 session_start();
 
 $redirect = get_redirect();
@@ -18,7 +19,7 @@ if (isset($_GET['p_id'])) {
 <!DOCTYPE html>
 <html>
 <head>
-	<link href="/extlib/bootstrap/css/bootstrap.min.css" rel="stylesheet"/>
+	<?php write_header_tags(); ?>
 </head>
 <body>
     <div class="container">
@@ -48,6 +49,6 @@ if (isset($_GET['p_id'])) {
 		</div>
 	</div>
     </div>
-	<script src="/extlib/jquery-3.0.0.min.js"></script>
+    <? write_footer_scripts() ?>
 </body>
 </html>

@@ -29,4 +29,17 @@ function write_login_modal() { ?>
 </div>
 <?php } 
 
+function write_header_tags($dir = '.') { ?>
+	<meta http-equiv="X-UA-Compatible" content="IE=edge">
+	<meta name="viewport" content="width=device-width, initial-scale=1">
+	<link href="<?= $dir ?>/vendor/bootstrap/css/bootstrap.min.css" rel="stylesheet" />
+	<link href="<?= $dir ?>/vendor/font-awesome-4.6.3/css/font-awesome.min.css" />
+<?php }
+
+function write_footer_scripts($dir = '.') { ?>
+	<script src="<?= $dir ?>/vendor/jquery-2.2.4.min.js"></script>
+	<script src="<?= $dir ?>/vendor/bootstrap/js/bootstrap.min.js"></script>
+	<script src="<?= $dir ?>/vendor/js.cookie-2.1.3.min.js"></script>
+	<script src="<?= $dir ?>/auth.js"></script>
+<?php }
 ?>
