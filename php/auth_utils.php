@@ -19,26 +19,30 @@ function get_user_id($redirect = false)
 	}
 }
 
+function update_permissions($project_id) {
+	$db_connection = new AuthDB();
+	$statement = $db_connection->prepare("
+		SELECT 
+			PermissionCode
+		FROM v_permissions
+		WHERE UserID=? AND ProjectID=?
+	");
+	$statement->bind_param('ii', $user, $project_id);
+	$statement->execute();
+	$statement->bind_result($query_permission);
+
+	$permissions = array();
+	while ($statement->fetch()) {
+		$permissions[] = $query_permission;
+	}
+
+	$_SESSION[SESSION_PERMISSION][$project_id] = $permissions;
+}
+
 function get_permissions($project_id) {
 	$user = get_user_id();
 	if (!isset($_SESSION[SESSION_PERMISSION][$project_id])) {
-		$db_connection = new AuthDB();
-		$statement = $db_connection->prepare("
-			SELECT 
-				PermissionCode
-			FROM v_permissions
-			WHERE UserID=? AND ProjectID=?
-		");
-		$statement->bind_param('ii', $user, $project_id);
-		$statement->execute();
-		$statement->bind_result($query_permission);
-
-		$permissions = array();
-		while ($statement->fetch()) {
-			$permissions[] = $query_permission;
-		}
-
-		$_SESSION[SESSION_PERMISSION][$project_id] = $permissions;
+		update_permissions($project_id);
 	}
 	return $_SESSION[SESSION_PERMISSION][$project_id];
 }
