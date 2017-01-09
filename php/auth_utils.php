@@ -55,16 +55,4 @@ function has_permissions($project_id, $permission_code) {
 	$permissions = get_permissions($project_id);
 	return array_search($permission_code, $permissions) !== false;
 }
-
-function get_redirect() {
-	if (isset($_GET["redirect"])) {
-		return $_GET["redirect"];
-	}
-	else if (isset($_POST["redirect"])) {
-		return $_POST["redirect"];
-	}
-	else {
-		return false;
-	}
-}
 ?>

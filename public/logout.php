@@ -1,5 +1,5 @@
 <?php
-include_once __DIR__ . '/../php/auth_utils.php';
+require_once __DIR__ . '/../php/internal_utils.php';
 include_once __DIR__ . '/../php/constants.php';
 include_once __DIR__ . '/../php/template.php';
 

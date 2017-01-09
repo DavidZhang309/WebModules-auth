@@ -1,11 +1,9 @@
 <?php
-include_once __DIR__ . '/../php/authDB.php';
-include_once __DIR__ . '/../php/auth_utils.php';
+include_once __DIR__ . '/../php/AuthDB.php';
 include_once __DIR__ . '/../php/constants.php';
+include_once __DIR__ . '/../php/auth_utils.php';
+include_once __DIR__ . '/../php/internal_utils.php';
 
-function try_get_post_data($key) {
-	return isset($_POST[$key]) && $_POST[$key] !== '' ? $_POST[$key] : false;
-}
 
 function login_failed($error_msg) {
 	$_SESSION[SESSION_ERROR] = $error_msg; 
