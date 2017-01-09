@@ -1,6 +1,8 @@
 <?php
 include_once __DIR__ . '/../../php/AuthDB.php';
 include_once __DIR__ . '/../../php/constants.php';
+require_once __DIR__ . '/../../php/auth_utils.php';
+require_once __DIR__ . '/../../php/internal_utils.php';
 session_start();
 
 function abort_response($error_type, $error_msg = false) {
@@ -16,36 +18,32 @@ function abort_response($error_type, $error_msg = false) {
 if (!isset($_POST)) {
 	abort_response('invalid_method', 'POST requests only');
 }
-
-if (isset($_POST['username'])) {
-	$username = $_POST['username'];
-} else {
-	abort_response('invalid_username', 'No username provided.');
+if (($username = try_get_post_data('username')) === false) {
+	abort_response('invalid_username', 'No username given');
+}
+if (($password = try_get_post_data('password')) === false) {
+	abort_response('invalid_password', 'No password given');
 }
 
-if (isset($_POST['password'])) {
-	$password = $_POST['password'];
-} else {
-	abort_response('invalid_password', 'No password provided.');
-}
-
+//login user
 $db_connection = new AuthDB();
-$statement = $db_connection->prepare('
-	SELECT UserID, Password, Salt
-	FROM tbl_users
-	WHERE Username=?
-');
-$statement->bind_param('s', $username);
-$statement->execute();
-$statement->bind_result($query_id, $query_password, $query_salt);
-if (!$statement->fetch()) { //user does not exist
-	abort_response('invalid_username', 'User does not exist');
-}
-
-if (hash('sha256', $query_salt . $password) === $query_password) {
-	$_SESSION[SESSION_ID] = $query_id;
+if (($user_id = authenticate_user($db_connection, $username, $password)) > 0) {
+	$_SESSION[SESSION_ID] = $user_id;
+	if (($project_id = try_get_post_data('p_id') !== false) {
+		update_permissions($project_id);	
+	}
 	echo json_encode(array());
 } else {
-	abort_response('invalid_password', 'Password is incorrect');
+	switch ($user_id) {
+		case AUTHAPI_BAD_USERNAME:
+			abort_response('bad_username', 'User does not exist');
+			break;
+		
+		case AUTHAPI_BAD_PASSWORD:
+			abort_response('bad_password', 'Password is incorrect');
+			break;
+		default:
+			abort_response('unknown_error', 'Unexpected error has occured');
+			break;
+	}
 }
-?>

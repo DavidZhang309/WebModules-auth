@@ -4,6 +4,7 @@ include_once __DIR__ . '/../php/constants.php';
 include_once __DIR__ . '/../php/auth_utils.php';
 include_once __DIR__ . '/../php/internal_utils.php';
 
+session_start();
 
 function login_failed($error_msg) {
 	$_SESSION[SESSION_ERROR] = $error_msg; 
@@ -25,7 +26,6 @@ function login_failed($error_msg) {
 	exit();
 }
 
-session_start();
 //input
 if (($user = try_get_post_data('username')) === false) {
 	login_failed('No username given');
@@ -36,25 +36,9 @@ if (($pass = try_get_post_data('password')) === false) {
 }
 
 $db_connection = new AuthDB();
-$statement = $db_connection->prepare('
-	SELECT UserID, 
-		Password, 
-		Salt
-	FROM tbl_users
-	WHERE Username=?
-');
 
-$statement->bind_param('s', $user);
-$statement->execute();
-$statement->bind_result($query_id, $query_password, $query_salt);
-
-if (!$statement->fetch()) { //user does not exist
-	login_failed('Account does not exist.');
-}
-$statement->close();
-
-if (hash('sha256', $query_salt . $pass) === $query_password) {
-	$_SESSION[SESSION_ID] = $query_id;
+if (($user_id = authenticate_user($db_connection, $user, $pass)) > 0) {
+	$_SESSION[SESSION_ID] = $user_id;
 	if (($project_id = try_get_post_data('p_id')) !== false) {
 		update_permissions($project_id);
 	}
@@ -62,6 +46,16 @@ if (hash('sha256', $query_salt . $pass) === $query_password) {
 		header("location: $redirect");
 	}
 } else {
-	login_failed('Incorrect password.');
+	switch ($user_id) {
+		case AUTHAPI_BAD_USERNAME:
+			login_failed('User does not exist');
+			break;
+		
+		case AUTHAPI_BAD_PASSWORD:
+			login_failed('Incorrect password.');
+			break;
+		default:
+			login_failed('Unexpected error has occured');
+			break;
+	}
 }
-?>
