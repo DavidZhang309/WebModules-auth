@@ -29,7 +29,7 @@ if (($password = try_get_post_data('password')) === false) {
 $db_connection = new AuthDB();
 if (($user_id = authenticate_user($db_connection, $username, $password)) > 0) {
 	$_SESSION[SESSION_ID] = $user_id;
-	if (($project_id = try_get_post_data('p_id') !== false) {
+	if (($project_id = try_get_post_data('p_id')) !== false) {
 		update_permissions($project_id);	
 	}
 	echo json_encode(array());
