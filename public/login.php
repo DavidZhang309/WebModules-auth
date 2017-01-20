@@ -1,10 +1,18 @@
 <?php 
+require_once __DIR__ . '/../php/auth_utils.php';
 require_once __DIR__ . '/../php/internal_utils.php';
 include_once __DIR__ . '/../php/constants.php';
 include_once __DIR__ . '/../php/template.php';
 session_start();
 
 $redirect = get_redirect();
+
+if (get_user_id() != -1) {
+	if ($redirect !== false) {
+		header('location: ' . $redirect);	
+	}
+	exit;
+}
 
 $redirect_value_attr = '';
 if ($redirect) {
